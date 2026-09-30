@@ -69,18 +69,15 @@ def review_repo(request):
     owner,repo=get_repo_details(github_url)
     print("OWNER:",owner,type(owner))
     print("REPO:",repo,type(repo))
-    result=asyncio.run(get_github_file(owner,repo,"README"))
-    for keyword in search_keywords:
-        result=asyncio.run(search_github_code(owner,repo,keyword))
-        print("KEYWORD",keyword)
-        print("RESULT",result)
-    print(result)
+    combined_query="token"
+    result =asyncio.run(search_github_code(owner,repo,combined_query))
+    print("SEARCH RESULT:",result)
 
     return JsonResponse(
         {
             "github_url":github_url,
             "template":template,
             "context":template_context,
-            "github_result":str(result)
+            "github_result":result
         }
     )

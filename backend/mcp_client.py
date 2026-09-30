@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
-
+import json
 
 load_dotenv()
 
@@ -40,7 +40,7 @@ async def get_github_file(owner,repo,path):
 
                 return result
 
-async def search_github_code(session,owner,repo,query):
+async def search_github_code(owner,repo,query):
     token = os.getenv("GITHUB_TOKEN")
     headers={
         "Authorization":f"Bearer {token}"
@@ -53,11 +53,12 @@ async def search_github_code(session,owner,repo,query):
                 result=await session.call_tool(
                     "search_code",
                     {
-                        "query":f"{query} repo:{owner}/{repo}"
+                        "query":query
                         
                     }
                 )
-                return result
+                data=json.loads(result.content[0].text)
+                return data
 
 async def main():
     token = os.getenv("GITHUB_TOKEN")
@@ -89,17 +90,13 @@ async def main():
                     "authorization"
                 ]
 
-                combined_query = " OR ".join(keywords)
+                owner="Priy4n5hu21072005"
+                repo="Multi-Wallet-App"
+                result = await search_github_code("Priy4n5hu21072005","Multi-Wallet-App","token")
+                print(result)
 
-                result = await search_github_code(
-                    session,
-                    owner,
-                    repo,
-                    combined_query
-                )
-
-                print("QUERY:", combined_query)
-                print("RESULT:", result)
+                
+                
 
 
 asyncio.run(main())
